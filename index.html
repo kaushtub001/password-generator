@@ -1,52 +1,240 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Password Generator - Easy Tutorials</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Generate strong, secure random passwords instantly with customizable length and character options." />
+  <title>PassForge — Secure Password Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="container">
-    <h1>Generate a <br><span>Random Password</span></h1>
-    <div class="display">
-        <input type="text" id="password" placeholder="Password">
-        <img src="images/copy.png" onclick="copyPassword()">
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <main class="wrapper">
+
+    <header class="app-header">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo-text">PassForge</span>
+      </div>
+      <p class="tagline">Craft unbreakable passwords in seconds</p>
+    </header>
+
+    <div class="card">
+
+      <div class="password-display" id="passwordDisplay">
+        <span class="password-text" id="passwordText">Click Generate to create a password</span>
+        <button class="copy-btn" id="copyBtn" onclick="copyPassword()" title="Copy to clipboard" aria-label="Copy password">
+          <svg id="copyIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M5 15H4C2.89 15 2 14.1 2 13V4C2 2.9 2.9 2 4 2H13C14.1 2 15 2.9 15 4V5" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <svg id="checkIcon" class="hidden" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="strength-section" id="strengthSection" aria-live="polite">
+        <div class="strength-bars">
+          <div class="bar" id="bar1"></div>
+          <div class="bar" id="bar2"></div>
+          <div class="bar" id="bar3"></div>
+          <div class="bar" id="bar4"></div>
+        </div>
+        <span class="strength-label" id="strengthLabel">—</span>
+      </div>
+
+      <div class="option-group">
+        <div class="option-header">
+          <label for="lengthSlider">Password Length</label>
+          <span class="length-badge" id="lengthValue">16</span>
+        </div>
+        <input
+          type="range"
+          id="lengthSlider"
+          min="6"
+          max="64"
+          value="16"
+          oninput="updateLength(this.value)"
+          aria-label="Password length"
+        />
+        <div class="slider-labels">
+          <span>6</span>
+          <span>64</span>
+        </div>
+      </div>
+
+      <div class="option-group">
+        <label class="group-label">Include Characters</label>
+        <div class="checkboxes">
+          <label class="checkbox-item" for="chkUpper">
+            <input type="checkbox" id="chkUpper" checked />
+            <span class="checkbox-box"></span>
+            <span class="checkbox-text">Uppercase <em>A–Z</em></span>
+          </label>
+          <label class="checkbox-item" for="chkLower">
+            <input type="checkbox" id="chkLower" checked />
+            <span class="checkbox-box"></span>
+            <span class="checkbox-text">Lowercase <em>a–z</em></span>
+          </label>
+          <label class="checkbox-item" for="chkNumbers">
+            <input type="checkbox" id="chkNumbers" checked />
+            <span class="checkbox-box"></span>
+            <span class="checkbox-text">Numbers <em>0–9</em></span>
+          </label>
+          <label class="checkbox-item" for="chkSymbols">
+            <input type="checkbox" id="chkSymbols" checked />
+            <span class="checkbox-box"></span>
+            <span class="checkbox-text">Symbols <em>!@#$…</em></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="generate-btn" id="generateBtn" onclick="createPassword()" aria-label="Generate new password">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 4V10H7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3.51 15C4.15 16.8 5.38 18.35 7.01 19.41C8.64 20.46 10.58 20.95 12.52 20.81C14.46 20.67 16.3 19.9 17.77 18.62C19.24 17.34 20.25 15.62 20.66 13.72C21.07 11.82 20.85 9.84 20.03 8.08C19.22 6.32 17.86 4.86 16.16 3.93C14.46 3 12.5 2.65 10.59 2.93C8.67 3.21 6.9 4.1 5.51 5.47L1 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Generate Password
+      </button>
+
     </div>
-    <button onclick="createPassword()"><img src="images/generate.png">Generate Password</button>
-</div>
+
+    <p class="footer-note">Passwords are generated locally — never sent anywhere.</p>
+
+  </main>
+
+  <div class="toast" id="toast" role="alert" aria-live="assertive">Copied to clipboard!</div>
 
 <script>
+  const UPPER   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const LOWER   = 'abcdefghijklmnopqrstuvwxyz';
+  const NUMS    = '0123456789';
+  const SYMBOLS = '@#$%^&*()_+~|}{[]></-=!?;:,."\'`\\';
 
- const passwordBox = document.getElementById("password");
- const lenght = 12;
+  const passwordText  = document.getElementById('passwordText');
+  const passwordDisplay = document.getElementById('passwordDisplay');
+  const copyBtn       = document.getElementById('copyBtn');
+  const copyIcon      = document.getElementById('copyIcon');
+  const checkIcon     = document.getElementById('checkIcon');
+  const lengthSlider  = document.getElementById('lengthSlider');
+  const lengthValue   = document.getElementById('lengthValue');
+  const strengthLabel = document.getElementById('strengthLabel');
+  const bars          = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3'), document.getElementById('bar4')];
+  const toast         = document.getElementById('toast');
 
- const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
- const lowerCase = "abcdefghijklmnopqrstuvwxyz";
- const number = "0123456789";
- const symbol = "@#$%^&*()_+~|}{[]></-=";
+  let currentPassword = '';
 
- const allChars = upperCase + lowerCase + number + symbol;
+  function updateLength(val) {
+    lengthValue.textContent = val;
+    if (currentPassword) createPassword();
+  }
 
-function createPassword(){
-    let password = "";
-    password += upperCase[Math.floor(Math.random() * upperCase.length)];
-    password += lowerCase[Math.floor(Math.random() * lowerCase.length)];
-    password += number[Math.floor(Math.random() * number.length)];
-    password += symbol[Math.floor(Math.random() * symbol.length)];
+  function createPassword() {
+    const useUpper   = document.getElementById('chkUpper').checked;
+    const useLower   = document.getElementById('chkLower').checked;
+    const useNumbers = document.getElementById('chkNumbers').checked;
+    const useSymbols = document.getElementById('chkSymbols').checked;
+    const length     = parseInt(lengthSlider.value);
 
-    while(lenght > password.length){
-        password += allChars[Math.floor(Math.random() * allChars.length)];
+    let pool = '';
+    let guaranteed = '';
+
+    if (useUpper)   { pool += UPPER;   guaranteed += UPPER[rand(UPPER.length)]; }
+    if (useLower)   { pool += LOWER;   guaranteed += LOWER[rand(LOWER.length)]; }
+    if (useNumbers) { pool += NUMS;    guaranteed += NUMS[rand(NUMS.length)]; }
+    if (useSymbols) { pool += SYMBOLS; guaranteed += SYMBOLS[rand(SYMBOLS.length)]; }
+
+    if (!pool) {
+      showToast('Select at least one character type!', true);
+      return;
     }
-    passwordBox.value = password;
-}
 
+    let password = guaranteed;
+    while (password.length < length) {
+      password += pool[rand(pool.length)];
+    }
 
-function copyPassword(){
-    passwordBox.select();
-    document.execCommand("copy");
-}
+    currentPassword = shuffle(password.slice(0, length));
 
+    passwordDisplay.classList.add('animating');
+    setTimeout(() => {
+      passwordText.textContent = currentPassword;
+      passwordDisplay.classList.remove('animating');
+      updateStrength(currentPassword, { useUpper, useLower, useNumbers, useSymbols });
+    }, 150);
+  }
+
+  function rand(max) {
+    return Math.floor(Math.random() * max);
+  }
+
+  function shuffle(str) {
+    const arr = str.split('');
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = rand(i + 1);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.join('');
+  }
+
+  function updateStrength(pw, opts) {
+    let score = 0;
+    const len = pw.length;
+
+    if (len >= 8)  score++;
+    if (len >= 12) score++;
+    if (len >= 20) score++;
+    const typesUsed = [opts.useUpper, opts.useLower, opts.useNumbers, opts.useSymbols].filter(Boolean).length;
+    if (typesUsed >= 3) score++;
+    if (typesUsed === 4 && len >= 16) score = 4;
+
+    const levels = [
+      { label: 'Very Weak', cls: 'very-weak' },
+      { label: 'Weak',      cls: 'weak'      },
+      { label: 'Fair',      cls: 'fair'      },
+      { label: 'Strong',    cls: 'strong'    },
+      { label: 'Very Strong', cls: 'very-strong' },
+    ];
+
+    const lvl = levels[Math.min(score, 4)];
+    strengthLabel.textContent = lvl.label;
+    bars.forEach((bar, i) => {
+      bar.className = 'bar';
+      if (i < score) bar.classList.add(lvl.cls, 'active');
+    });
+  }
+
+  function copyPassword() {
+    if (!currentPassword) return;
+    navigator.clipboard.writeText(currentPassword).then(() => {
+      copyIcon.classList.add('hidden');
+      checkIcon.classList.remove('hidden');
+      showToast('Copied to clipboard!');
+      setTimeout(() => {
+        copyIcon.classList.remove('hidden');
+        checkIcon.classList.add('hidden');
+      }, 2000);
+    });
+  }
+
+  function showToast(msg, isError = false) {
+    toast.textContent = msg;
+    toast.className = 'toast show' + (isError ? ' error' : '');
+    setTimeout(() => { toast.className = 'toast'; }, 2500);
+  }
+
+  createPassword();
 </script>
-
 </body>
 </html>
